@@ -1,6 +1,6 @@
 // app/ui/page.tsx
+import Link from "next/link";
 import { fetchTopics } from "@/lib/data";
-import { Topic } from "@/components/Topic";
 
 export default async function UiPage() {
   const topics = await fetchTopics();
@@ -9,7 +9,13 @@ export default async function UiPage() {
     <main className="flex flex-col items-stretch justify-stretch p-4">
       <h1 className="mb-4 text-xl md:text-2xl">Topics</h1>
       {topics.map((topic) => (
-        <Topic key={topic.id} id={topic.id} text={topic.title} />
+        <Link
+          key={topic.id}
+          href={`/ui/topics/${topic.id}`} // Use UUID directly
+          className="block p-2 mb-2 border rounded hover:bg-gray-100"
+        >
+          {topic.title}
+        </Link>
       ))}
     </main>
   );

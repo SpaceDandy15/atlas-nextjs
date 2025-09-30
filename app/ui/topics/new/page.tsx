@@ -3,38 +3,34 @@ import { revalidatePath } from "next/cache";
 import { insertTopic } from "@/lib/data";
 
 export default function NewTopicPage() {
-  // Server action to create a new topic
   async function createTopic(data: FormData) {
-    "use server"; // Required for server actions
-
+    "use server";
     const title = data.get("title")?.toString();
     if (!title) return;
 
-    // Insert topic into the database
     await insertTopic({ title });
 
-    // Revalidate /ui page so the sidebar and list update immediately
+    // Revalidate /ui page to show new topic
     revalidatePath("/ui");
   }
 
   return (
-    <form action={createTopic} className="space-y-4 p-4">
-      <h1 className="text-2xl font-bold">Create a New Topic</h1>
-
-      {/* Input field must match "title" since insertTopic expects { title } */}
-      <input
-        name="title"
-        type="text"
-        placeholder="Topic title"
-        className="border p-2 rounded w-full"
-      />
-
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
-        Create
-      </button>
-    </form>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-4">Create a New Topic</h1>
+      <form action={createTopic} className="flex flex-col gap-2 max-w-md">
+        <input
+          name="title"
+          type="text"
+          placeholder="Topic title"
+          className="border px-2 py-1"
+        />
+        <button
+          type="submit"
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+        >
+          Create
+        </button>
+      </form>
+    </div>
   );
 }
