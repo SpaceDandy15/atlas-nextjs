@@ -1,3 +1,6 @@
-export default function Page() {
-  return <h1>Hello Atlas</h1>;
+// app/page.tsx
+import { redirect } from "next/navigation";
+
+export default function Home() {
+  redirect("/ui");
 }

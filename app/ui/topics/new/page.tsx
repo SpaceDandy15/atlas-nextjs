@@ -1,28 +1,40 @@
-import { prisma } from "@/lib/prisma";
+// app/ui/topics/new/page.tsx
 import { revalidatePath } from "next/cache";
+import { insertTopic } from "@/lib/data";
 
 export default function NewTopicPage() {
   // Server action to create a new topic
   async function createTopic(data: FormData) {
     "use server"; // Required for server actions
-    const name = data.get("name")?.toString();
-    if (!name) return;
 
-    // Create topic in the database
-    await prisma.topic.create({ data: { name } });
+    const title = data.get("title")?.toString();
+    if (!title) return;
 
-    // Revalidate /ui page so the sidebar updates immediately
+    // Insert topic into the database
+    await insertTopic({ title });
+
+    // Revalidate /ui page so the sidebar and list update immediately
     revalidatePath("/ui");
   }
 
   return (
-    <form action={createTopic}>
-      <h1>Create a New Topic</h1>
+    <form action={createTopic} className="space-y-4 p-4">
+      <h1 className="text-2xl font-bold">Create a New Topic</h1>
 
-      {/* Make sure the input has a name so FormData captures it */}
-      <input name="name" type="text" placeholder="Topic name" />
+      {/* Input field must match "title" since insertTopic expects { title } */}
+      <input
+        name="title"
+        type="text"
+        placeholder="Topic title"
+        className="border p-2 rounded w-full"
+      />
 
-      <button type="submit">Create</button>
+      <button
+        type="submit"
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        Create
+      </button>
     </form>
   );
 }

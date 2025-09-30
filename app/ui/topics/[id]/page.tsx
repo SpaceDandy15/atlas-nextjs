@@ -1,77 +1,32 @@
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
+// app/ui/topics/[id]/page.tsx
+import { AskQuestion } from "@/components/AskQuestion";
+import { Question } from "@/components/Question";
+import { fetchQuestions, fetchTopic } from "@/lib/data";
+import { HashtagIcon } from "@heroicons/react/24/outline";
 
-// Define the props type for Next.js App Router
-type Props = {
-  params: { id: string };
-};
+export default async function Page({ params }: { params: { id: string } }) {
+  const { id } = params; // ✅ UUID string
+  const topic = await fetchTopic(id);
+  const questions = await fetchQuestions(id);
 
-// Server action to add a new question
-async function addQuestion(data: FormData, topicId: number) {
-  "use server";
-  const text = data.get("text")?.toString();
-  if (!text) return;
-
-  await prisma.question.create({
-    data: {
-      text,
-      topicId,
-      votes: 0,
-    },
-  });
-
-  revalidatePath(`/ui/topics/${topicId}`);
-}
-
-// Server action to vote up a question
-async function voteQuestion(questionId: number, topicId: number) {
-  "use server";
-  const question = await prisma.question.findUnique({ where: { id: questionId } });
-  if (!question) return;
-
-  await prisma.question.update({
-    where: { id: questionId },
-    data: { votes: question.votes + 1 },
-  });
-
-  revalidatePath(`/ui/topics/${topicId}`);
-}
-
-// Main page component
-export default async function TopicPage({ params }: Props) {
-  const topicId = parseInt(params.id);
-
-  // Fetch the topic and its questions from DB
-  const topic = await prisma.topic.findUnique({
-    where: { id: topicId },
-    include: { questions: true },
-  });
-
-  if (!topic) return <p>Topic not found</p>;
+  if (!topic) {
+    return <div>Topic not found</div>;
+  }
 
   return (
     <div>
-      <h1>{topic.name}</h1>
-
-      {/* Form to add a new question */}
-      <form action={async (formData: FormData) => await addQuestion(formData, topicId)}>
-        <input name="text" type="text" placeholder="Ask a question" />
-        <button type="submit">Ask</button>
-      </form>
-
-      <ul>
-        {topic.questions.map((q) => (
-          <li key={q.id} style={{ marginBottom: "0.5rem" }}>
-            {q.text} – {q.votes} 👍
-            <form
-              style={{ display: "inline", marginLeft: "0.5rem" }}
-              action={async () => await voteQuestion(q.id, topicId)}
-            >
-              <button type="submit">👍</button>
-            </form>
-          </li>
-        ))}
-      </ul>
+      <h1 className="text-3xl font-black flex items-center">
+        <HashtagIcon className="h-6 w-6 mr-2" /> {topic.title}
+      </h1>
+      <AskQuestion topic={topic.id} />
+      {questions.map((question) => (
+        <Question
+          key={question.id}
+          id={question.id}
+          text={question.title}
+          votes={question.votes}
+        />
+      ))}
     </div>
   );
 }
