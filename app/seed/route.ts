@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { db } from "@vercel/postgres";
-import { users, topics, questions } from "../../lib/placeholder-data.ts";
+import { users, topics, questions } from "../../lib/placeholder-data";
 import { revalidatePath } from "next/cache";
 
 const client = await db.connect();
