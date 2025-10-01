@@ -2,12 +2,10 @@ import { AskQuestion } from "@/components/AskQuestion";
 import { Question } from "@/components/Question";
 import { fetchTopic, fetchQuestions } from "@/lib/data";
 
-type PageProps = {
-  params: { id: string };
-};
-
-export default async function TopicPage({ params }: PageProps) {
+export default async function TopicPage({ params }: { params: { id: string } }) {
   const topicId = params.id;
+
+  // Fetch topic and questions
   const topic = await fetchTopic(topicId);
   const questions = await fetchQuestions(topicId);
 
