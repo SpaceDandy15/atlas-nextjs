@@ -2,10 +2,10 @@ import { AskQuestion } from "@/components/AskQuestion";
 import { Question } from "@/components/Question";
 import { fetchTopic, fetchQuestions } from "@/lib/data";
 
-export default async function TopicPage({ params }: { params: { id: string } }) {
-  const topicId = params.id;
+export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
+  // Await params if Next.js expects it as a Promise
+  const { id: topicId } = await params;
 
-  // Fetch topic and questions
   const topic = await fetchTopic(topicId);
   const questions = await fetchQuestions(topicId);
 
