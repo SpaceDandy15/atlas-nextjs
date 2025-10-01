@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 export default async function TopicPage({ params }: PageProps) {
-  const { id: topicId } = await params;
+  const topicId = params.id;
   const topic = await fetchTopic(topicId);
   const questions = await fetchQuestions(topicId);
 
