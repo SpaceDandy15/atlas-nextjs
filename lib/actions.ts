@@ -12,6 +12,7 @@ export async function addQuestion(formData: FormData) {
 
   try {
     await insertQuestion({ title, topic_id, votes: 0 });
+
     // Revalidate the topic page to show new question
     revalidatePath(`/ui/topics/${topic_id}`);
   } catch (err) {
@@ -27,7 +28,11 @@ export async function addVote(formData: FormData) {
   if (!id || !topic_id) return;
 
   try {
-    await incrementVotes(id);
+    const updated = await incrementVotes(id);
+
+    // For debugging, log what came back
+    console.log("Vote updated:", updated);
+
     // Revalidate the topic page to show updated votes
     revalidatePath(`/ui/topics/${topic_id}`);
   } catch (err) {

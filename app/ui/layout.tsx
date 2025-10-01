@@ -1,6 +1,9 @@
 import Link from "next/link";
+import { fetchTopics } from "@/lib/data";
 
-export default function UILayout({ children }: { children: React.ReactNode }) {
+export default async function UILayout({ children }: { children: React.ReactNode }) {
+  const topics = await fetchTopics(); // fetch topics from DB
+
   return (
     <div style={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar */}
@@ -14,17 +17,19 @@ export default function UILayout({ children }: { children: React.ReactNode }) {
             <li style={{ marginBottom: "0.5rem" }}>
               <Link href="/ui/topics/new">New Topic</Link>
             </li>
-            <li style={{ marginBottom: "0.5rem" }}>
-              <Link href="/ui/topics/123">Sample Topic</Link>
-            </li>
+
+            {/* Render topics from DB */}
+            {topics.map((topic) => (
+              <li key={topic.id} style={{ marginBottom: "0.5rem" }}>
+                <Link href={`/ui/topics/${topic.id}`}>{topic.title}</Link>
+              </li>
+            ))}
           </ul>
         </nav>
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, padding: "1rem" }}>
-        {children}
-      </main>
+      <main style={{ flex: 1, padding: "1rem" }}>{children}</main>
     </div>
   );
 }
