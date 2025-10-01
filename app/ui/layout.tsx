@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { fetchTopics } from "@/lib/data";
 import SignOutButton from "@/components/SignOutButton";
 import NewTopicButton from "@/components/NewTopicButton";
@@ -20,7 +21,11 @@ export default async function UILayout({ children }: { children: React.ReactNode
         }}
       >
         <div>
-          <h2>Dashboard</h2>
+          {/* Logo instead of Dashboard title */}
+          <div style={{ marginBottom: "1rem", textAlign: "center" }}>
+            <Image src="/logo.png" alt="Atlas School" width={180} height={60} />
+          </div>
+
           <nav>
             <ul style={{ listStyle: "none", padding: 0 }}>
               <li style={{ marginBottom: "0.5rem" }}>
