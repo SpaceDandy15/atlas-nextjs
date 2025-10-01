@@ -1,16 +1,14 @@
-// auth.ts
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 // TODO: replace with your own DB call
 async function fetchUser(email: string) {
-  // Example hardcoded user (replace with real DB query)
   if (email === "user@atlasmail.com") {
     return {
       id: "1",
       email: "user@atlasmail.com",
-      password: await bcrypt.hash("123456", 10), // hashed pw
+      password: await bcrypt.hash("123456", 10), // hashed password
     };
   }
   return null;
@@ -28,8 +26,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email" },
         password: { label: "Password", type: "password" },
       },
-      // 👇 This belongs *inside* the Credentials provider
-      authorize: async (credentials) => {
+      authorize: async (
+        credentials: { email: string; password: string } | undefined
+      ) => {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await fetchUser(credentials.email);
@@ -46,7 +45,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     authorized: async ({ auth }) => {
-      // Only allow access if logged in
       return !!auth;
     },
   },
