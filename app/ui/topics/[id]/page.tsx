@@ -1,6 +1,7 @@
 import { AskQuestion } from "@/components/AskQuestion";
 import { Question } from "@/components/Question";
 import { fetchTopic, fetchQuestions } from "@/lib/data";
+import Link from "next/link";
 
 export default async function TopicPage({ params }: { params: Promise<{ id: string }> }) {
   // Await params if Next.js expects it as a Promise
@@ -20,13 +21,15 @@ export default async function TopicPage({ params }: { params: Promise<{ id: stri
 
       {/* List of questions with vote buttons */}
       {questions.map((q) => (
-        <Question
-          key={q.id}
-          id={q.id}
-          text={q.title}
-          votes={q.votes}
-          topic_id={topic.id}
-        />
+        // Wrap each Question in a Link to /ui/questions/:id
+        <Link key={q.id} href={`/ui/questions/${q.id}`}>
+          <Question
+            id={q.id}
+            text={q.title}
+            votes={q.votes}
+            topic_id={topic.id}
+          />
+        </Link>
       ))}
     </div>
   );

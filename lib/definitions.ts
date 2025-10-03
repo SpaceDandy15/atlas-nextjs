@@ -19,3 +19,10 @@ export type Question = {
   topic_id: string;
   votes: number;
 };
+
+export interface Answer {
+  id: string;
+  answer: string;
+  question_id: string;
+  accepted: boolean;
+}
