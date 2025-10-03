@@ -2,21 +2,20 @@
 
 import { CheckIcon } from "@heroicons/react/24/solid";
 import { acceptAnswer } from "@/lib/actions";
-import { useRouter } from "next/navigation";
 
 export default function AnswerItem({
   answer,
   questionId,
+  onAccept,
 }: {
   answer: { id: string; answer: string; accepted: boolean };
   questionId: string;
+  onAccept: (id: string) => void;
 }) {
-  const router = useRouter();
-
   const handleAccept = async () => {
     try {
       await acceptAnswer(answer.id, questionId);
-      router.refresh();
+      onAccept(answer.id); // update parent state
     } catch (err) {
       console.error("Failed to mark answer as accepted:", err);
     }

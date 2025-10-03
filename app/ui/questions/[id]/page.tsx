@@ -1,21 +1,27 @@
 import AnswerForm from "@/components/AnswerForm";
-import AnswerItem from "@/components/AnswerItem";
+import AnswerList, { Answer } from "@/components/AnswerList";
 import { fetchQuestion, fetchAnswers } from "@/lib/data";
 
 export default async function QuestionPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string }; // server component params
 }) {
-  // ✅ Await params first
-  const { id: questionId } = await params;
+  const { id: questionId } = params;
 
   const question = await fetchQuestion(questionId);
-  const answers = await fetchAnswers(questionId);
+  const answersData = await fetchAnswers(questionId);
 
   if (!question) {
     return <div className="p-6">Question not found</div>;
   }
+
+  // Map answers to include `accepted` property
+  const initialAnswers: Answer[] = answersData.map((ans) => ({
+    id: ans.id,
+    answer: ans.answer,
+    accepted: ans.accepted, // assumes your DB has the boolean column
+  }));
 
   return (
     <div className="p-6">
@@ -28,19 +34,7 @@ export default async function QuestionPage({
       {/* Answers List */}
       <div className="mt-6">
         <h2 className="text-xl font-semibold mb-2">Answers</h2>
-        <ul className="space-y-2">
-          {answers
-            .sort((a, b) => (a.id === question.accepted_answer_id ? -1 : 1)) // accepted first
-            .map((answer) => (
-              <AnswerItem
-                key={answer.id}
-                answer={{
-                  ...answer,
-                  accepted: answer.id === question.accepted_answer_id,
-                }}
-              />
-            ))}
-        </ul>
+        <AnswerList questionId={questionId} initialAnswers={initialAnswers} />
       </div>
     </div>
   );
