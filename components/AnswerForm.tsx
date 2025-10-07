@@ -1,20 +1,35 @@
-import { addAnswer } from "@/lib/actions";
+"use client";
 
-export function AnswerForm({ questionId }: { questionId: string }) {
+import { useState } from "react";
+
+interface AnswerFormProps {
+  questionId: string;
+  onSubmit: (answerText: string) => void;
+}
+
+export function AnswerForm({ questionId, onSubmit }: AnswerFormProps) {
+  const [answer, setAnswer] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!answer.trim()) return;
+    onSubmit(answer);
+    setAnswer(""); // clear textarea
+  };
+
   return (
-    <form action={addAnswer} className="relative my-6">
-      <input type="hidden" name="question_id" value={questionId} />
+    <form onSubmit={handleSubmit} className="mb-4">
       <textarea
-        name="answer"
+        value={answer}
+        onChange={(e) => setAnswer(e.target.value)}
+        className="w-full border rounded p-2"
         placeholder="Write your answer..."
-        className="w-full rounded border p-2"
-        required
       />
       <button
         type="submit"
-        className="absolute right-2 top-2 rounded bg-secondary px-4 py-2 text-white"
+        className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
       >
-        Submit
+        Submit Answer
       </button>
     </form>
   );

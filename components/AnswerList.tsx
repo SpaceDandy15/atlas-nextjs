@@ -12,18 +12,23 @@ export default function AnswerList({
   answers: Answer[];
   onAccept: (answerId: string) => void;
 }) {
+  // Sort so accepted answers always appear first
+  const sortedAnswers = [...answers].sort((a, b) => {
+    if (a.accepted && !b.accepted) return -1;
+    if (!a.accepted && b.accepted) return 1;
+    return 0;
+  });
+
   return (
     <ul className="space-y-2">
-      {answers
-        .sort((a, b) => (b.accepted ? 1 : 0) - (a.accepted ? 1 : 0)) // accepted first
-        .map((answer) => (
-          <AnswerItem
-            key={answer.id}
-            answer={answer}
-            questionId={questionId}
-            onAccept={() => onAccept(answer.id)}
-          />
-        ))}
+      {sortedAnswers.map((answer) => (
+        <AnswerItem
+          key={answer.id}
+          answer={answer}
+          questionId={questionId}
+          onAccept={() => onAccept(answer.id)}
+        />
+      ))}
     </ul>
   );
 }

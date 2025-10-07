@@ -1,14 +1,13 @@
-import { AnswerForm } from "@/components/AnswerForm";
-import AnswerList, { Answer } from "@/components/AnswerList";
+import QuestionPageClient from "@/components/QuestionPageClient";
 import { fetchQuestion, fetchAnswers } from "@/lib/data";
+import { Answer } from "@/components/AnswerList";
 
-export default async function QuestionPage({
-  params,
-}: {
+interface QuestionPageProps {
   params: Promise<{ id: string }>;
-}) {
-  const { id: questionId } = await params;
+}
 
+export default async function QuestionPage({ params }: QuestionPageProps) {
+  const { id: questionId } = await params;
   const question = await fetchQuestion(questionId);
   const answersData = await fetchAnswers(questionId);
 
@@ -26,13 +25,11 @@ export default async function QuestionPage({
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">{question.title}</h1>
 
-      {/* Form for adding a new answer */}
-      <AnswerForm questionId={questionId} />
-
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold mb-2">Answers</h2>
-        <AnswerList questionId={questionId} answers={initialAnswers} />
-      </div>
+      <QuestionPageClient
+        questionId={questionId}
+        questionTitle={question.title}
+        initialAnswers={initialAnswers}
+      />
     </div>
   );
 }
