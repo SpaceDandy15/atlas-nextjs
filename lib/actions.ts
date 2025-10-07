@@ -42,12 +42,15 @@ export async function addVote(formData: FormData) {
 
 // ---------------- Answers ----------------
 
-// Add a new answer
-export async function addAnswer(questionId: string, text: string) {
-  if (!text || !questionId) return;
+// ✅ Add a new answer — now works with <form action={addAnswer}>
+export async function addAnswer(formData: FormData) {
+  const questionId = formData.get("question_id") as string;
+  const answer = formData.get("answer") as string;
+
+  if (!questionId || !answer) return;
 
   try {
-    await insertAnswer({ question_id: questionId,  answer: text });
+    await insertAnswer({ question_id: questionId, answer });
     revalidatePath(`/ui/questions/${questionId}`);
   } catch (err) {
     console.error("Failed to add answer:", err);

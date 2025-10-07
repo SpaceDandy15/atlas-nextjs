@@ -1,44 +1,29 @@
 "use client";
 
-import { useState } from "react";
 import AnswerItem from "./AnswerItem";
-
-export type Answer = {
-  id: string;
-  answer: string;
-  accepted: boolean;
-};
+import { Answer } from "./AnswerForm";
 
 export default function AnswerList({
-  initialAnswers,
   questionId,
+  answers,
+  onAccept,
 }: {
-  initialAnswers: Answer[];
   questionId: string;
+  answers: Answer[];
+  onAccept: (answerId: string) => void;
 }) {
-  const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
-
-  const handleAccept = (id: string) => {
-    // Update state to mark only this answer as accepted
-    setAnswers((prev) =>
-      prev.map((a) => ({ ...a, accepted: a.id === id }))
-    );
-    // Optional: sort so accepted answer moves to top
-    setAnswers((prev) =>
-      [...prev].sort((a, b) => (b.accepted ? 1 : 0) - (a.accepted ? 1 : 0))
-    );
-  };
-
   return (
     <ul className="space-y-2">
-      {answers.map((answer) => (
-        <AnswerItem
-          key={answer.id}
-          answer={answer}
-          questionId={questionId}
-          onAccept={handleAccept}
-        />
-      ))}
+      {answers
+        .sort((a, b) => (b.accepted ? 1 : 0) - (a.accepted ? 1 : 0)) // accepted first
+        .map((answer) => (
+          <AnswerItem
+            key={answer.id}
+            answer={answer}
+            questionId={questionId}
+            onAccept={() => onAccept(answer.id)}
+          />
+        ))}
     </ul>
   );
 }
