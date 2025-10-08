@@ -1,6 +1,6 @@
 import QuestionPageClient from "@/components/QuestionPageClient";
 import { fetchQuestion, fetchAnswers } from "@/lib/data";
-import { Answer } from "@/components/AnswerList";
+import { Answer } from "@/components/AnswerForm";
 
 interface QuestionPageProps {
   params: Promise<{ id: string }>;
