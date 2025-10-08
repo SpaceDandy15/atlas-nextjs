@@ -34,3 +34,9 @@ export function AnswerForm({ questionId, onSubmit }: AnswerFormProps) {
     </form>
   );
 }
+
+export interface Answer {
+  id: string;
+  answer: string;
+  accepted: boolean;
+}
