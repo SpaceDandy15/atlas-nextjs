@@ -2,7 +2,12 @@ import { addQuestion } from "@/lib/actions";
 
 export function AskQuestion({ topic }: { topic: string }) {
   return (
-    <form action={addQuestion} className="relative my-8">
+    <form
+      action={async (formData: FormData) => {
+        await addQuestion(formData); // wrap in async to ensure void return
+      }}
+      className="relative my-8"
+    >
       <input type="hidden" name="topic_id" value={topic} />
       <input
         type="text"
