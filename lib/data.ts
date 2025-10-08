@@ -71,7 +71,8 @@ export async function insertQuestion(
 ) {
   try {
     const data = await sql<Question>`
-      INSERT INTO questions (title, topic_id, votes) VALUES (${question.title}, ${question.topic_id}, ${question.votes})
+      INSERT INTO questions (title, topic_id, votes)
+      VALUES (${question.title}, ${question.topic_id}, ${question.votes})
     `;
     return data.rows;
   } catch (error) {
@@ -108,7 +109,9 @@ export async function fetchAnswers(questionId: string): Promise<Answer[]> {
 export async function insertAnswer(answer: Pick<Answer, "answer" | "question_id">) {
   try {
     const data = await sql<Answer>`
-      INSERT INTO answers (answer, question_id, accepted) VALUES (${answer.answer}, ${answer.question_id}, false) RETURNING *
+      INSERT INTO answers (answer, question_id, accepted)
+      VALUES (${answer.answer}, ${answer.question_id}, false)
+      RETURNING *
     `;
     return data.rows[0];
   } catch (error) {
@@ -119,10 +122,7 @@ export async function insertAnswer(answer: Pick<Answer, "answer" | "question_id"
 
 export async function markAcceptedAnswer(answerId: string, questionId: string) {
   try {
-    // Unmark any existing accepted answers for this question
     await sql`UPDATE answers SET accepted = false WHERE question_id = ${questionId}`;
-
-    // Mark the selected answer as accepted
     const data = await sql<Answer>`
       UPDATE answers SET accepted = true WHERE id = ${answerId} RETURNING *
     `;
@@ -130,5 +130,21 @@ export async function markAcceptedAnswer(answerId: string, questionId: string) {
   } catch (error) {
     console.error("Database Error:", error);
     throw new Error("Failed to mark accepted answer.");
+  }
+}
+
+// ---------------- Votes ----------------
+// ✅ NEW HELPER for addVote in actions.ts
+export async function insertVote({ question_id }: { question_id: string }) {
+  try {
+    await sql`
+      UPDATE questions
+      SET votes = votes + 1
+      WHERE id = ${question_id}
+    `;
+    return true;
+  } catch (error) {
+    console.error("Database Error:", error);
+    throw new Error("Failed to add vote.");
   }
 }
