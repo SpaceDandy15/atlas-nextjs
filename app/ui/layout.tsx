@@ -3,6 +3,7 @@ import Image from "next/image";
 import { fetchTopics } from "@/lib/data";
 import SignOutButton from "@/components/SignOutButton";
 import NewTopicButton from "@/components/NewTopicButton";
+import LoggedInUser from "@/components/LoggedInUser"; // ✅ import
 
 export default async function UILayout({ children }: { children: React.ReactNode }) {
   const topics = await fetchTopics(); // fetch topics from DB
@@ -21,7 +22,7 @@ export default async function UILayout({ children }: { children: React.ReactNode
         }}
       >
         <div>
-          {/* Logo instead of Dashboard title */}
+          {/* Logo */}
           <div style={{ marginBottom: "1rem", textAlign: "center" }}>
             <Image src="/logo.png" alt="Atlas School" width={180} height={60} />
           </div>
@@ -42,10 +43,12 @@ export default async function UILayout({ children }: { children: React.ReactNode
           </nav>
         </div>
 
-        {/* 👇 New Topic above Sign Out */}
+        {/* Bottom actions */}
         <div style={{ marginTop: "1rem" }}>
           <NewTopicButton />
           <div style={{ marginTop: "0.5rem" }}>
+            {/* ✅ LoggedInUser goes above SignOutButton */}
+            <LoggedInUser />
             <SignOutButton />
           </div>
         </div>

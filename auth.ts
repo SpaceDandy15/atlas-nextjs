@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
+import GitHubProvider from "next-auth/providers/github";
 import bcrypt from "bcryptjs";
 
 async function fetchUser(email: string) {
@@ -26,11 +27,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Password", type: "password" },
       },
       authorize: async (credentials) => {
-        // cast credentials to correct type
-        const { email, password } = credentials as {
-          email: string;
-          password: string;
-        };
+        const { email, password } = credentials as { email: string; password: string };
 
         if (!email || !password) return null;
 
@@ -40,6 +37,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, user.password);
         return passwordsMatch ? user : null;
       },
+    }),
+    GitHubProvider({
+      clientId: process.env.GITHUB_ID!,
+      clientSecret: process.env.GITHUB_SECRET!,
     }),
   ],
   callbacks: {
