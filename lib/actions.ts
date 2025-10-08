@@ -1,10 +1,23 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { 
-  insertAnswer, 
-  markAcceptedAnswer 
-} from "./data";
+import { insertQuestion, insertAnswer, markAcceptedAnswer } from "./data";
+
+// Add a new question
+export async function addQuestion(formData: FormData) {
+  const title = formData.get("title") as string;
+  const topic_id = formData.get("topic_id") as string;
+
+  if (!title || !topic_id) return;
+
+  try {
+    const newQuestion = await insertQuestion({ title, topic_id, votes: 0 });
+    revalidatePath(`/ui/topics/${topic_id}`);
+    return newQuestion; // return inserted question if needed
+  } catch (err) {
+    console.error("Failed to add question:", err);
+  }
+}
 
 // Add a new answer
 export async function addAnswer(formData: FormData) {
@@ -16,7 +29,7 @@ export async function addAnswer(formData: FormData) {
   try {
     const newAnswer = await insertAnswer({ question_id: questionId, answer });
     revalidatePath(`/ui/questions/${questionId}`);
-    return newAnswer; // Return inserted answer to client
+    return newAnswer;
   } catch (err) {
     console.error("Failed to add answer:", err);
   }
