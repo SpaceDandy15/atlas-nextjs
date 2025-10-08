@@ -1,8 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { insertQuestion, insertAnswer, markAcceptedAnswer } from "./data";
-import { insertVote } from "./data";
+import { insertQuestion, insertAnswer, markAcceptedAnswer, insertVote } from "./data";
 
 // Add a new question
 export async function addQuestion(formData: FormData): Promise<void> {
@@ -55,12 +54,10 @@ export async function addVote(formData: FormData) {
   if (!id || !topic_id) return;
 
   try {
-    if (typeof insertVote === "function") {
-      await insertVote({ question_id: id, topic_id });
-    } else {
-      console.log(`Vote added for question ${id} in topic ${topic_id}`);
-    }
+    // Only pass what insertVote expects
+    await insertVote({ question_id: id });
 
+    // Still use topic_id to revalidate the topic page
     revalidatePath(`/ui/topics/${topic_id}`);
   } catch (err) {
     console.error("Failed to add vote:", err);
