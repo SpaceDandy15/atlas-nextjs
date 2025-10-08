@@ -3,23 +3,22 @@
 import { revalidatePath } from "next/cache";
 import { insertQuestion, insertAnswer, markAcceptedAnswer } from "./data";
 
-// Add a new question
-export async function addQuestion(formData: FormData) {
+// ✅ Add a new question
+export async function addQuestion(formData: FormData): Promise<void> {
   const title = formData.get("title") as string;
   const topic_id = formData.get("topic_id") as string;
 
   if (!title || !topic_id) return;
 
   try {
-    const newQuestion = await insertQuestion({ title, topic_id, votes: 0 });
+    await insertQuestion({ title, topic_id, votes: 0 });
     revalidatePath(`/ui/topics/${topic_id}`);
-    return newQuestion; // return inserted question if needed
   } catch (err) {
     console.error("Failed to add question:", err);
   }
 }
 
-// Add a new answer
+// ✅ Add a new answer
 export async function addAnswer(formData: FormData) {
   const questionId = formData.get("question_id") as string;
   const answer = formData.get("answer") as string;
@@ -35,7 +34,7 @@ export async function addAnswer(formData: FormData) {
   }
 }
 
-// Mark an answer as accepted
+// ✅ Mark an answer as accepted
 export async function acceptAnswer(answerId: string, questionId: string) {
   if (!answerId || !questionId) return;
 
