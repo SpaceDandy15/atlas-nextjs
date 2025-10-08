@@ -1,9 +1,10 @@
+// QuestionPageClient.tsx
 "use client";
 
 import { useState } from "react";
-import AnswerList, { Answer } from "./AnswerList";
-import { AnswerForm } from "./AnswerForm";
-import { addAnswer, acceptAnswer } from "@/lib/actions";
+import AnswerList from "./AnswerList";
+import { AnswerForm, Answer } from "./AnswerForm";
+import { addAnswer as addAnswerServer, acceptAnswer as acceptAnswerServer } from "@/lib/actions";
 
 interface QuestionPageClientProps {
   questionId: string;
@@ -18,38 +19,26 @@ export default function QuestionPageClient({
 }: QuestionPageClientProps) {
   const [answers, setAnswers] = useState<Answer[]>(initialAnswers);
 
-  // Add a new answer
   async function handleAddAnswer(answerText: string) {
-    try {
-      const formData = new FormData();
-      formData.append("answer", answerText);
-      formData.append("question_id", questionId);
+    const formData = new FormData();
+    formData.append("answer", answerText);
+    formData.append("question_id", questionId);
 
-      const newAnswer = await addAnswer(formData);
-      if (newAnswer) setAnswers((prev) => [...prev, newAnswer]);
-    } catch (error) {
-      console.error("Failed to add answer:", error);
-    }
+    const newAnswer = await addAnswerServer(formData); // call server action
+    if (newAnswer) setAnswers((prev) => [...prev, newAnswer]);
   }
 
-  // Mark answer as accepted
   async function handleAccept(answerId: string) {
-    try {
-      await acceptAnswer(answerId, questionId);
-      setAnswers((prev) =>
-        prev.map((a) => ({ ...a, accepted: a.id === answerId }))
-      );
-    } catch (error) {
-      console.error("Failed to accept answer:", error);
-    }
+    await acceptAnswerServer(answerId, questionId); // call server action
+    setAnswers((prev) =>
+      prev.map((a) => ({ ...a, accepted: a.id === answerId }))
+    );
   }
 
   return (
     <div className="mt-6">
       <h2 className="text-xl font-semibold mb-2">Answers</h2>
-
       <AnswerForm questionId={questionId} onSubmit={handleAddAnswer} />
-
       <AnswerList
         questionId={questionId}
         answers={answers}
